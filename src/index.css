@@ -4,8 +4,50 @@ body {
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-y: hidden;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+.animated-gradient {
+  background: linear-gradient(
+    135deg,
+    #232526 0%,
+    #414345 25%,
+    #283e51 50%,
+    #485563 75%,
+    #1a2980 100%
+  );
+  background-size: 400% 400%;
+  animation: gradientPulse 15s ease-in-out infinite, hueCycle 14s linear infinite;
+  filter: hue-rotate(0deg);
+}
+
+@keyframes gradientPulse {
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 100%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 0%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes hueCycle {
+  0% {
+    filter: hue-rotate(0deg);
+  }
+  100% {
+    filter: hue-rotate(360deg);
+  }
 }

@@ -1,7 +1,6 @@
 // src/MobileApp.tsx
 import { AppBar, Box, Paper, Slide, Tab, Tabs, Toolbar, Typography } from '@mui/material';
-import { useState } from 'react';
-import ImpulseFab from './components/ImpulseFab';
+
 import ListConversion from './modes/ListConversion';
 import ShoppingMode from './modes/ShoppingMode';
 import StoreEdit from './modes/StoreEdit';
@@ -9,23 +8,34 @@ import StoreEdit from './modes/StoreEdit';
 const tabLabels = ['List Conversion', 'Store Editing', 'Shopping'];
 type MobileAppProps = {
   deviceContainer: React.RefObject<HTMLDivElement | null>;
+  tab: number;
+  setTab: (tab: number) => void;
+  onImpulseClick: () => void;
 };
 
-export default function MobileApp({ deviceContainer }: MobileAppProps) {
-  const [tab, setTab] = useState(0);
-
-  // You can lift impulse handling logic here if you want
-
+export default function MobileApp({
+  deviceContainer,
+  tab,
+  setTab,
+  onImpulseClick,
+}: MobileAppProps) {
   return (
     <Box
       sx={{
-        minHeight: '100vh',
         bgcolor: '#fafbfc',
         display: 'flex',
         flexDirection: 'column',
+        position: 'relative',
+        width: '100%',
+        height: '100%',
       }}
     >
-      <AppBar position="static" color="primary" elevation={2} sx={{ borderRadius: 0 }}>
+      <AppBar
+        position="static"
+        color="primary"
+        elevation={2}
+        sx={{ borderRadius: 0, zIndex: (theme) => theme.zIndex.drawer + 10 }}
+      >
         <Toolbar variant="dense" sx={{ minHeight: 48 }}>
           <Typography variant="h6" sx={{ flexGrow: 1, fontSize: 20 }}>
             Grocery List Converter
@@ -52,24 +62,13 @@ export default function MobileApp({ deviceContainer }: MobileAppProps) {
           position: 'relative',
           height: 0,
           minHeight: 0,
-          overflow: 'hidden', // Hide scrollbars always
         }}
       >
         {/* Slide for each tab */}
         <Slide direction="down" in={tab === 0} mountOnEnter unmountOnExit timeout={400}>
           <Box
             sx={{
-              position: 'absolute',
-              width: '100%',
-              top: 0,
-              left: 0,
-              bottom: 0,
-              height: '100%',
               p: 2,
-              overflowY: 'auto',
-              // Hide scrollbar on all browsers
-              scrollbarWidth: 'none',
-              '&::-webkit-scrollbar': { display: 'none' },
             }}
           >
             <Paper
@@ -90,16 +89,7 @@ export default function MobileApp({ deviceContainer }: MobileAppProps) {
         <Slide direction="down" in={tab === 1} mountOnEnter unmountOnExit timeout={400}>
           <Box
             sx={{
-              position: 'absolute',
-              width: '100%',
-              top: 0,
-              left: 0,
-              bottom: 0,
-              height: '100%',
               p: 2,
-              overflowY: 'auto',
-              scrollbarWidth: 'none',
-              '&::-webkit-scrollbar': { display: 'none' },
             }}
           >
             <Paper elevation={1} sx={{ minHeight: 400, borderRadius: 2, p: 2 }}>
@@ -110,26 +100,22 @@ export default function MobileApp({ deviceContainer }: MobileAppProps) {
         <Slide direction="down" in={tab === 2} mountOnEnter unmountOnExit timeout={400}>
           <Box
             sx={{
-              position: 'absolute',
-              width: '100%',
-              top: 0,
-              left: 0,
-              bottom: 0,
-              height: '100%',
               p: 2,
-              overflowY: 'auto',
-              scrollbarWidth: 'none',
-              '&::-webkit-scrollbar': { display: 'none' },
             }}
           >
-            <Paper elevation={1} sx={{ minHeight: 400, borderRadius: 2, p: 2 }}>
+            <Paper
+              elevation={1}
+              sx={{
+                minHeight: 400,
+                borderRadius: 2,
+                p: 2,
+              }}
+            >
               <ShoppingMode />
             </Paper>
           </Box>
         </Slide>
       </Box>
-
-      <ImpulseFab show={tab === 2} />
     </Box>
   );
 }

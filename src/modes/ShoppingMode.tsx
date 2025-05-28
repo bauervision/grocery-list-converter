@@ -1,15 +1,9 @@
-import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import RestoreIcon from '@mui/icons-material/Restore';
 import {
   Box,
   Button,
   Chip,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  Fab,
   IconButton,
   List,
   ListItem,
@@ -142,7 +136,13 @@ const ShoppingMode: React.FC = () => {
   );
 
   return (
-    <Box>
+    <Box
+      sx={{
+        flexDirection: 'column',
+        scrollbarWidth: 'none',
+        '&::-webkit-scrollbar': { display: 'none' },
+      }}
+    >
       {/* Estimated total */}
       <Paper elevation={2} sx={{ p: 2, mb: 2, display: 'flex', justifyContent: 'space-between' }}>
         <Typography variant="subtitle1">Estimated Total</Typography>
@@ -156,73 +156,92 @@ const ShoppingMode: React.FC = () => {
       {activeItems.length === 0 ? (
         <Typography color="text.secondary">All items acquired!</Typography>
       ) : (
-        <SwipeableList>
-          {activeItems.map((item) => (
-            <SwipeableListItem
-              key={item.id}
-              leadingActions={leadingActions(item)}
-              trailingActions={trailingActions(item)}
-            >
-              <ListItem
-                sx={{
-                  borderRadius: 2,
-                  mb: 1.5,
-                  boxShadow: '0 1px 4px rgba(80,80,120,0.06)',
-                  bgcolor: '#fff',
-                  pl: 0,
-                  overflow: 'hidden',
-                  position: 'relative',
-                  minHeight: 56,
-                }}
-                secondaryAction={
-                  <Stack direction="row" alignItems="center" spacing={1}>
-                    <Chip label={`$${item.price.toFixed(2)}`} color="primary" size="small" />
-                    <IconButton size="small" onClick={() => handleEditQty(item)} sx={{ ml: 1 }}>
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  </Stack>
-                }
+        <Box
+          sx={{
+            flex: 1,
+            minHeight: 0,
+            display: 'flex',
+          }}
+        >
+          <SwipeableList>
+            {activeItems.map((item) => (
+              <SwipeableListItem
+                key={item.id}
+                leadingActions={leadingActions(item)}
+                trailingActions={trailingActions(item)}
               >
-                {/* Colored section bar */}
-                <Box
+                <ListItem
                   sx={{
-                    width: 7,
-                    bgcolor: SECTION_COLORS[item.section] || SECTION_COLORS.Default,
-                    height: '80%',
-                    borderRadius: '8px',
-                    position: 'absolute',
-                    left: 0,
-                    top: '10%',
-                    bottom: '10%',
+                    borderRadius: 2,
+                    mb: 1.5,
+                    boxShadow: '0 1px 4px rgba(80,80,120,0.06)',
+                    bgcolor: '#fff',
+                    pl: 0,
+                    overflow: 'hidden',
+                    position: 'relative',
+                    minHeight: 56,
                   }}
-                />
-                <ListItemText
-                  sx={{ pl: 2, minWidth: 0 }}
-                  primary={
-                    <Typography variant="body1" fontWeight={500}>
-                      {item.name}
-                      {item.quantity > 1 && (
-                        <Typography
-                          component="span"
-                          sx={{ ml: 0.5 }}
-                          color="text.secondary"
-                          variant="body2"
-                        >
-                          ×{item.quantity}
-                        </Typography>
-                      )}
-                    </Typography>
+                  secondaryAction={
+                    <Stack direction="row" alignItems="center" spacing={1}>
+                      <Chip
+                        label={
+                          item.quantity > 1
+                            ? `$${item.price.toFixed(2)} × ${item.quantity} = $${(
+                                item.price * item.quantity
+                              ).toFixed(2)}`
+                            : `$${item.price.toFixed(2)}`
+                        }
+                        color="primary"
+                        size="small"
+                      />
+
+                      <IconButton size="small" onClick={() => handleEditQty(item)} sx={{ ml: 1 }}>
+                        <EditIcon fontSize="small" />
+                      </IconButton>
+                    </Stack>
                   }
-                  secondary={
-                    <Typography variant="caption" color="text.secondary">
-                      {item.section}
-                    </Typography>
-                  }
-                />
-              </ListItem>
-            </SwipeableListItem>
-          ))}
-        </SwipeableList>
+                >
+                  {/* Colored section bar */}
+                  <Box
+                    sx={{
+                      width: 7,
+                      bgcolor: SECTION_COLORS[item.section] || SECTION_COLORS.Default,
+                      height: '80%',
+                      borderRadius: '8px',
+                      position: 'absolute',
+                      left: 0,
+                      top: '10%',
+                      bottom: '10%',
+                    }}
+                  />
+                  <ListItemText
+                    sx={{ pl: 2, minWidth: 0 }}
+                    primary={
+                      <Typography variant="body1" fontWeight={500}>
+                        {item.name}
+                        {item.quantity > 1 && (
+                          <Typography
+                            component="span"
+                            sx={{ ml: 0.5 }}
+                            color="text.secondary"
+                            variant="body2"
+                          >
+                            ×{item.quantity}
+                          </Typography>
+                        )}
+                      </Typography>
+                    }
+                    secondary={
+                      <Typography variant="caption" color="text.secondary">
+                        {item.section}
+                      </Typography>
+                    }
+                  />
+                </ListItem>
+              </SwipeableListItem>
+            ))}
+          </SwipeableList>
+        </Box>
       )}
 
       {/* Restore acquired items */}
@@ -261,7 +280,13 @@ const ShoppingMode: React.FC = () => {
                     )}
                   </>
                 }
-                secondary={`${item.section} – $${item.price.toFixed(2)}`}
+                secondary={
+                  item.quantity > 1
+                    ? `${item.section} – $${item.price.toFixed(2)} × ${item.quantity} = $${(
+                        item.price * item.quantity
+                      ).toFixed(2)}`
+                    : `${item.section} – $${item.price.toFixed(2)}`
+                }
               />
             </ListItem>
           ))}
@@ -278,26 +303,6 @@ const ShoppingMode: React.FC = () => {
           onClose={handleQtyDone}
         />
       )}
-
-      {/* Impulse Add FAB (dialog is just a placeholder, see previous code for real one) */}
-      <Fab
-        color="secondary"
-        aria-label="add"
-        sx={{ position: 'absolute', bottom: 24, right: 24, zIndex: 200 }}
-        onClick={openImpulse}
-      >
-        <AddIcon />
-      </Fab>
-      <Dialog open={impulseOpen} onClose={() => setImpulseOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle>Add Impulse Item</DialogTitle>
-        <DialogContent>
-          {/* Impulse dialog content from your earlier code */}
-          {/* ... */}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setImpulseOpen(false)}>Close</Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 };
